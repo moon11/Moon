@@ -1,35 +1,50 @@
-*.py[cod]
 
-# C extensions
-*.so
+import os
+import difflib
+import sys
 
-# Packages
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
-lib
-lib64
+VAR_DIR = R"NcKL4.0"
+#DIR_PART_1 = r"C:\Users\IBM_ADMIN\Desktop\[OMNI_INTEGRATION]"
+#DIR_PART_2 = r"B2-extendedattrs\NcKL4.0.B1\NcKL\rules\include-snmptrap\riverbed"
 
-# Installer logs
-pip-log.txt
+DIR_PART_1 = r"C:\Users\IBM_ADMIN\Desktop\[OMNI_INTEGRATION]"
+DIR_PART_2 = r"B2-extendedattrs\NcKL4.0.B{}\NcKL\rules\include-snmptrap\riverbed"
 
-# Unit test / coverage reports
-.coverage
-.tox
-nosetests.xml
+NO_OF_COPIES = 2
 
-# Translations
-*.mo
+COMP_DIR =  sorted([
+                    os.path.join(DIR_PART_1, VAR_DIR, DIR_PART_2.format(i)) \
+                    for i in range(1, NO_OF_COPIES+1) \
+                    if os.path.exists( \
+                                        os.path.join(DIR_PART_1, VAR_DIR, DIR_PART_2.format(i)) \
+                                     )
+                    ])
 
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
+#print "COMP_DIR", COMP_DIR
+
+all_files = []
+for each_file in os.listdir(COMP_DIR[0]):
+    temp_list = []
+    for each_path in COMP_DIR:
+        temp_list.append(os.path.join(each_path, each_file))
+        #print temp_list
+    all_files.append(tuple(temp_list))
+    
+#print all_files
+
+#fp = open("Output.html", "w")
+
+#fp.write("<html><head></head><body>")
+
+for file_set in all_files:
+        if "-MIB.include.snmptrap.rules" in file_set[0]:
+            print all_files[0]
+           # print os.path.split(file_set[0])[-1]
+            #print "Checking on: ", os.path.split(file_set[0])[-1]      
+            file_1_content = open(file_set[0], "r").readlines()
+            file_2_content = open(file_set[1], "r").readlines()
+        #diff = difflib.unified_diff(file_1_content, file_2_content)
+            html_diff = difflib.HtmlDiff(tabsize=0, wrapcolumn=73)
+            result = html_diff.make_file(file_1_content, file_2_content, "Source", "Target", context=True, numlines=1000)
+            f = open('c:/riverbed.htm', 'w')
+            f.write(result)
